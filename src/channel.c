@@ -203,8 +203,12 @@ static int _do_download(channel *c, channel_info *channel_info, rss_item *item,
 
   /* Check that the spool directory exists. */
   if (!g_file_test(c->spool_directory, G_FILE_TEST_IS_DIR)) {
-    g_fprintf(stderr, "Spool directory %s not found.\n", c->spool_directory);
-    return 1;
+    g_fprintf(stderr, "Spool directory %s not found. Creating it.\n", c->spool_directory);
+    /* Try to create spool director if it doesn't exist */
+    if (mkdir(c->spool_directory, 0755) < 0) {
+      g_fprintf(stderr, "Error creating spool directory %s.\n", c->spool_directory);
+      return 1;
+    }
   }
 
   /* Build enclosure filename. */
